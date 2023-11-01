@@ -6,5 +6,5 @@
     "browser_action": {
       "default_popup": "popup.html"
     },
-    "permissions": ["activeTab"]
+    "permissions": ["activeTab", "http://127.0.0.1:8000/"]
 }
