@@ -1,0 +1,10 @@
+{
+    "manifest_version": 2,
+    "name": "Text Reverser",
+    "version": "1.0",
+    "description": "Reverses selected text",
+    "browser_action": {
+      "default_popup": "popup.html"
+    },
+    "permissions": ["activeTab"]
+}
