@@ -26,24 +26,23 @@ class InfraStack(Stack):
             "TextImprover",
             runtime=lambda_.Runtime.PYTHON_3_9,
             code=lambda_.Code.from_asset(os.path.join(DIRNAME, "backend")),
-            handler="main.reverse_text",
+            handler="main.lambda_reverse_text_backend",
             timeout=Duration.seconds(30),
         )
 
         # Create the HTTP API with CORS
-        # authorizer = HttpIamAuthorizer()
         http_api = _apigw.HttpApi(
             self,
             "MyHttpApi",
             cors_preflight=_apigw.CorsPreflightOptions(
-                allow_methods=[_apigw.CorsHttpMethod.GET],
+                allow_methods=[_apigw.CorsHttpMethod.POST],
                 allow_origins=["*"],
+
                 max_age=Duration.days(10),
             ),
-            # default_authorizer=authorizer,
         )
 
-        # Add a route to POST /form
+        # Add a route to POST
         http_api.add_routes(
             path="/reverse",
             methods=[_apigw.HttpMethod.POST],

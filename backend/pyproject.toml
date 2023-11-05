@@ -8,7 +8,6 @@ packages = [{include = "text_improver_backend"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-fastapi = "^0.104.1"
 uvicorn = "^0.23.2"
 
 
