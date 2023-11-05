@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }, async function (selection) {
             const selectedText = selection[0];
 
-            // Call FastAPI service to reverse text
-            const response = await fetch("http://127.0.0.1:8000/reverse/", {
+            // Call service to reverse text
+            const response = await fetch("https://bcnhtyp368.execute-api.us-east-1.amazonaws.com/reverse", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
