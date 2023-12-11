@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const data = await response.json();
 
-            const reversedText = data.reversed;
+            const reversedText = data.text;
 
             // Insert reversed text
             chrome.tabs.executeScript({

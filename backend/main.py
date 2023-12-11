@@ -9,7 +9,10 @@ def lambda_reverse_text_backend(event, context):
     try:
         # Extract the 'text' field from the parsed body
         extracted_text = body['text']
-        reversed_dict = {"reversed": extracted_text[::-1]}
+        reversed_dict = {
+            "operation": "reverse",
+            "text": extracted_text[::-1]
+        }
 
         response = {
             "statusCode": HTTPStatus.OK.value,
