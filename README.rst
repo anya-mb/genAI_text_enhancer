@@ -4,26 +4,14 @@ This repository contains a Chrome Extension. The AWS Lambda backend exposes an e
 
 Directory Structure
 -------------------
-::
 
-    Project Root
-    │
-    ├── backend
-    │   ├── main.py
-    │   ├── pyproject.toml
-    │   └── poetry.lock
-    ├── infra
-    │   ├── app.py
-    │   ├── cdk.json
-    │   ├── infra_stack.py
-    │   ├── pyproject.toml
-    │   └── poetry.lock
-    ├── tests
-    │   └── test_reverse_text_work_correctly.py
-    └── plugin
-        ├── popup.html
-        ├── popup.js
-        └── manifest.json
+There are 4 directories in this project:
+
+1. ``backend`` - main lambda logic;
+2. ``infra`` - cdk project infra (AWS lambda, HTTP routes);
+3. ``plugin`` - plugin js and html files;
+4. ``tests`` - backend tests
+
 
 Getting Started
 ===============
@@ -42,16 +30,18 @@ Installation
 ------------
 
 1. Navigate to the ``backend`` directory.
-2. Initialize and install dependencies using Poetry.
 
     cd backend
+
+2. Initialize and install dependencies using Poetry.
 
     poetry install
 
 3. Navigate to the ``infra`` directory.
-4. Initialize and install dependencies using Poetry.
 
     cd ../infra
+
+4. Initialize and install dependencies using Poetry.
 
     poetry install
 
