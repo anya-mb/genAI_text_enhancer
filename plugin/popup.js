@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ text: selectedText })
+                body: JSON.stringify({ text: selectedText, 'operation': 'reverse' })
             });
 
             const data = await response.json();

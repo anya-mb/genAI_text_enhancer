@@ -16,6 +16,7 @@ def test_lambda_reverse_text_backend():
     context = None  # context is often not needed for basic tests
     response = lambda_reverse_text_backend(event, context)
 
+    # what is expected
     status_code = HTTPStatus.OK.value
     body_text = {
         "operation": "reverse",
@@ -23,10 +24,10 @@ def test_lambda_reverse_text_backend():
     }
 
     expected_response = {
-            "statusCode": status_code,
-            "body": json.dumps(body_text, indent=2),
-            "headers": {"content-type": "application/json"},
-        }
+        "statusCode": status_code,
+        "body": json.dumps(body_text, indent=2),
+        "headers": {"content-type": "application/json"},
+    }
 
     assert response == expected_response
 
@@ -34,9 +35,9 @@ def test_lambda_reverse_text_backend():
 def test_lambda_reverse_text_backend_with_invalid_text_input():
     # Example of invalid input
     body = {
-            "operation": "reverse",
-            "text": None
-        }
+        "operation": "reverse",
+        "text": None
+    }
 
     event = {
         'body': json.dumps(body)  # Convert the dictionary to a JSON string
@@ -69,6 +70,7 @@ def test_lambda_reverse_text_backend_with_unknown_operation():
     expected_status_code = HTTPStatus.BAD_REQUEST.value
 
     assert status_code == expected_status_code
+
 
 def test_lambda_reverse_text_backend_with_invalid_body():
     # Example of invalid input

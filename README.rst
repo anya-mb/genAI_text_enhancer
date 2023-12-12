@@ -1,6 +1,6 @@
 Project Overview
 ================
-This repository contains a FastAPI backend service and a Chrome Extension. The FastAPI backend exposes an endpoint that reverses a text string. The Chrome Extension provides a button to capture selected text, send it to the FastAPI service for reversal, and then insert it back.
+This repository contains a Chrome Extension. The AWS Lambda backend exposes an endpoint that reverses a text string. The Chrome Extension provides a button to capture selected text, send it to AWS Lambda service for reversal, and then insert it back.
 
 Directory Structure
 -------------------
@@ -12,7 +12,14 @@ Directory Structure
     │   ├── main.py
     │   ├── pyproject.toml
     │   └── poetry.lock
-    │
+    ├── infra
+    │   ├── app.py
+    │   ├── cdk.json
+    │   ├── infra_stack.py
+    │   ├── pyproject.toml
+    │   └── poetry.lock
+    ├── tests
+    │   └── test_reverse_text_work_correctly.py
     └── plugin
         ├── popup.html
         ├── popup.js
@@ -37,20 +44,44 @@ Installation
 1. Navigate to the ``backend`` directory.
 2. Initialize and install dependencies using Poetry.
 
-
-
     cd backend
+
     poetry install
 
-Running the Server
-------------------
+3. Navigate to the ``infra`` directory.
+4. Initialize and install dependencies using Poetry.
 
-To run the FastAPI server, execute the following command:
+    cd ../infra
+
+    poetry install
+
+5. Run tests (optional)
+
+    cd tests
+
+    pytest -v
+
+Deployment
+------------
+
+Navigate to the ``infra`` directory.
+
+    cd infra
+
+Activate environment (optional):
+
+    poetry shell
 
 
-    poetry run uvicorn main:app --reload
+Export environment variables for AWS CDK:
 
-The server will start at http://127.0.0.1:8000.
+    export AWS_ACCESS_KEY_ID=
+    export AWS_SECRET_ACCESS_KEY=
+
+
+To deploy on Mac OS:
+
+    cdk deploy
 
 
 Plugin: Chrome Extension
