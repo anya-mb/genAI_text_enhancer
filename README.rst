@@ -1,22 +1,17 @@
 Project Overview
 ================
-This repository contains a FastAPI backend service and a Chrome Extension. The FastAPI backend exposes an endpoint that reverses a text string. The Chrome Extension provides a button to capture selected text, send it to the FastAPI service for reversal, and then insert it back.
+This repository contains a Chrome Extension. The AWS Lambda backend exposes an endpoint that reverses a text string. The Chrome Extension provides a button to capture selected text, send it to AWS Lambda service for reversal, and then insert it back.
 
 Directory Structure
 -------------------
-::
 
-    Project Root
-    │
-    ├── backend
-    │   ├── main.py
-    │   ├── pyproject.toml
-    │   └── poetry.lock
-    │
-    └── plugin
-        ├── popup.html
-        ├── popup.js
-        └── manifest.json
+There are 4 directories in this project:
+
+1. ``backend`` - main lambda logic;
+2. ``infra`` - cdk project infra (AWS lambda, HTTP routes);
+3. ``plugin`` - plugin js and html files;
+4. ``tests`` - backend tests
+
 
 Getting Started
 ===============
@@ -35,22 +30,48 @@ Installation
 ------------
 
 1. Navigate to the ``backend`` directory.
-2. Initialize and install dependencies using Poetry.
-
-
 
     cd backend
+
+2. Initialize and install dependencies using Poetry.
+
     poetry install
 
-Running the Server
-------------------
+3. Navigate to the ``infra`` directory.
 
-To run the FastAPI server, execute the following command:
+    cd ../infra
+
+4. Initialize and install dependencies using Poetry.
+
+    poetry install
+
+5. Run tests (optional)
+
+    cd tests
+
+    pytest -v
+
+Deployment
+------------
+
+Navigate to the ``infra`` directory.
+
+    cd infra
+
+Activate environment (optional):
+
+    poetry shell
 
 
-    poetry run uvicorn main:app --reload
+Export environment variables for AWS CDK:
 
-The server will start at http://127.0.0.1:8000.
+    export AWS_ACCESS_KEY_ID=
+    export AWS_SECRET_ACCESS_KEY=
+
+
+To deploy on Mac OS:
+
+    cdk deploy
 
 
 Plugin: Chrome Extension
