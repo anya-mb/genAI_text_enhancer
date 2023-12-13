@@ -31,7 +31,7 @@ def validate_request(request_body):
         return make_return(HTTPStatus.BAD_REQUEST.value, "Unknown operation")
 
 
-def validate_nad_get_text_and_operation(event, context):
+def validate_and_get_text_and_operation(event, context, expected_operation):
     # The 'body' field is a stringified JSON, so parse it as well
     body = json.loads(event['body'])
 
@@ -43,6 +43,10 @@ def validate_nad_get_text_and_operation(event, context):
         extracted_text = body['text']
         extracted_operation = body['operation']
 
+        if extracted_operation != expected_operation:
+            return make_return(HTTPStatus.BAD_REQUEST.value,
+                               f"Bad request exception: {extracted_operation=}, but {expected_operation=}")
+
         return extracted_text, extracted_operation
 
     except Exception as e:
@@ -50,10 +54,9 @@ def validate_nad_get_text_and_operation(event, context):
 
 
 def lambda_reverse_text_backend(event, context):
-    text, operation = validate_nad_get_text_and_operation(event, context)
+    EXPECTED_OPERATION = "summarize"
 
-    if operation != "reverse":
-        return make_return(HTTPStatus.BAD_REQUEST.value, "Bad request exception: operation is not reverse, but invoked reverse lambda")
+    text, operation = validate_and_get_text_and_operation(event, context, EXPECTED_OPERATION)
 
     reversed_dict = {
         "operation": operation,
@@ -64,16 +67,13 @@ def lambda_reverse_text_backend(event, context):
 
 
 def lambda_summarize_text_backend(event, context):
-    text, operation = validate_nad_get_text_and_operation(event, context)
+    EXPECTED_OPERATION = "summarize"
 
-    if operation != "summarize":
-        return make_return(HTTPStatus.BAD_REQUEST.value, "Bad request exception: operation is not summarize, but invoked summarize lambda")
+    text, operation = validate_and_get_text_and_operation(event, context, EXPECTED_OPERATION)
 
     summarized_dict = {
         "operation": operation,
         "text": "This is summarized text"
     }
-
-    print(f"{summarized_dict=}")
 
     return make_return(HTTPStatus.OK.value, json.dumps(summarized_dict, indent=2))
