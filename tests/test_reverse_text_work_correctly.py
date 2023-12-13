@@ -32,12 +32,15 @@ def test_lambda_reverse_text_backend():
     assert response == expected_response
 
 
-def test_lambda_reverse_text_backend_with_invalid_text_input():
-    # Example of invalid input
-    body = {
-        "operation": "reverse",
-        "text": None
-    }
+@pytest.mark.parametrize("body", [
+    {"operation": "reverse", "text": None},
+    {"operation": "invalid_operation", "text": "example"},
+    {},
+    {"text": "example"},
+    {"operation": "reverse"}
+])
+def test_lambda_reverse_text_backend_invalid_input(body):
+    expected_status_code = HTTPStatus.BAD_REQUEST.value
 
     event = {
         'body': json.dumps(body)  # Convert the dictionary to a JSON string
@@ -46,44 +49,5 @@ def test_lambda_reverse_text_backend_with_invalid_text_input():
 
     response = lambda_reverse_text_backend(event, context)
     status_code = response['statusCode']
-
-    expected_status_code = HTTPStatus.BAD_REQUEST.value
-
-    assert status_code == expected_status_code
-
-
-def test_lambda_reverse_text_backend_with_unknown_operation():
-    # Example of invalid input
-    body = {
-        "operation": "invalid_operation",
-        "text": "example"
-    }
-
-    event = {
-        'body': json.dumps(body)  # Convert the dictionary to a JSON string
-    }
-    context = None
-
-    response = lambda_reverse_text_backend(event, context)
-    status_code = response['statusCode']
-
-    expected_status_code = HTTPStatus.BAD_REQUEST.value
-
-    assert status_code == expected_status_code
-
-
-def test_lambda_reverse_text_backend_with_invalid_body():
-    # Example of invalid input
-    body = {}
-
-    event = {
-        'body': json.dumps(body)  # Convert the dictionary to a JSON string
-    }
-    context = None
-
-    response = lambda_reverse_text_backend(event, context)
-    status_code = response['statusCode']
-
-    expected_status_code = HTTPStatus.BAD_REQUEST.value
 
     assert status_code == expected_status_code
