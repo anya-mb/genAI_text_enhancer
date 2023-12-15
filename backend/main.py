@@ -1,6 +1,9 @@
 import json
 from http import HTTPStatus
 
+import json
+import boto3
+
 
 KNOWN_OPERATIONS = ['reverse', 'summarize']
 
@@ -54,7 +57,7 @@ def validate_and_get_text_and_operation(event, context, expected_operation):
 
 
 def lambda_reverse_text_backend(event, context):
-    EXPECTED_OPERATION = "summarize"
+    EXPECTED_OPERATION = "reverse"
 
     text, operation = validate_and_get_text_and_operation(event, context, EXPECTED_OPERATION)
 
@@ -71,9 +74,27 @@ def lambda_summarize_text_backend(event, context):
 
     text, operation = validate_and_get_text_and_operation(event, context, EXPECTED_OPERATION)
 
+    boto3_bedrock = boto3.client('bedrock-runtime')
+
+    prompt_data = f"Please summarize given text: {text}" # "What is the capital of France?"
+
+    # formatting body for claude
+    # Its a bit picky and must end with "Assistant:"
+    body = json.dumps({"prompt": "Human:" + prompt_data + "\nAssistant:", "max_tokens_to_sample": 300})
+
+    # Choose the model
+    modelId = 'anthropic.claude-instant-v1'
+    accept = 'application/json'
+    contentType = 'application/json'
+
+    # invoke model and print out answer
+    response = boto3_bedrock.invoke_model(body=body, modelId=modelId, accept=accept, contentType=contentType)
+    response_body = json.loads(response.get('body').read())
+
+
     summarized_dict = {
         "operation": operation,
-        "text": "This is summarized text"
+        "text": response_body['completion'] #"This is summarized text"
     }
 
     return make_return(HTTPStatus.OK.value, json.dumps(summarized_dict, indent=2))
