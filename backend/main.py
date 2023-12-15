@@ -76,7 +76,7 @@ def lambda_summarize_text_backend(event, context):
 
     boto3_bedrock = boto3.client('bedrock-runtime')
 
-    prompt_data = f"Please summarize given text: {text}" # "What is the capital of France?"
+    prompt_data = f"Please summarize given text: {text}" # "What is the capital of France?" # f"Please summarize given text: {text}" #
 
     # formatting body for claude
     # Its a bit picky and must end with "Assistant:"

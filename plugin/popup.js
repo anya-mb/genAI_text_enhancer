@@ -13,11 +13,15 @@ function setupTextProcessingButton(buttonId, apiUrl, operationType) {
             });
 
             const data = await response.json();
-            const processedText = data.text;
+
+            console.dir(data);
+            console.log(data.text);
+            const processedText = data.text.replace(/\n/g, "").replace(/"/g, '\\"');
+            console.log(processedText);
 
             // Insert processed text
             chrome.tabs.executeScript({
-                code: `document.execCommand('insertText', false, "${processedText.replace(/"/g, '\\"')}");`
+                code: `document.execCommand('insertText', false, "${processedText}");`
             });
         });
     });
