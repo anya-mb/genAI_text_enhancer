@@ -34,7 +34,16 @@ def validate_request(request_body):
         return make_return(HTTPStatus.BAD_REQUEST.value, "Unknown operation")
 
 
-def validate_and_get_text_and_operation(event, context, expected_operation):
+def get_text_and_operation(event, expected_operation):
+    body = json.loads(event['body'])
+
+    extracted_text = body['text']
+    extracted_operation = body['operation']
+
+    return extracted_text, extracted_operation
+
+
+def is_not_valid(event, expected_operation):
     # The 'body' field is a stringified JSON, so parse it as well
     body = json.loads(event['body'])
 
@@ -50,7 +59,7 @@ def validate_and_get_text_and_operation(event, context, expected_operation):
             return make_return(HTTPStatus.BAD_REQUEST.value,
                                f"Bad request exception: {extracted_operation=}, but {expected_operation=}")
 
-        return extracted_text, extracted_operation
+        return False
 
     except Exception as e:
         return make_return(HTTPStatus.INTERNAL_SERVER_ERROR.value, f"Exception={e}")
@@ -59,7 +68,12 @@ def validate_and_get_text_and_operation(event, context, expected_operation):
 def lambda_reverse_text_backend(event, context):
     EXPECTED_OPERATION = "reverse"
 
-    text, operation = validate_and_get_text_and_operation(event, context, EXPECTED_OPERATION)
+    result = is_not_valid(event, EXPECTED_OPERATION)
+
+    if result:
+        return result
+
+    text, operation = get_text_and_operation(event, EXPECTED_OPERATION)
 
     reversed_dict = {
         "operation": operation,
@@ -72,14 +86,19 @@ def lambda_reverse_text_backend(event, context):
 def lambda_summarize_text_backend(event, context):
     EXPECTED_OPERATION = "summarize"
 
-    text, operation = validate_and_get_text_and_operation(event, context, EXPECTED_OPERATION)
+    result = is_not_valid(event, EXPECTED_OPERATION)
+
+    if result:
+        return result
+
+    text, operation = get_text_and_operation(event, EXPECTED_OPERATION)
 
     boto3_bedrock = boto3.client('bedrock-runtime')
 
-    prompt_data = f"Please summarize given text: {text}" # "What is the capital of France?" # f"Please summarize given text: {text}" #
+    prompt_data = f"Please summarize given text: {text}"
 
     # formatting body for claude
-    # Its a bit picky and must end with "Assistant:"
+    # It is a bit picky and must end with "Assistant:"
     body = json.dumps({"prompt": "Human:" + prompt_data + "\nAssistant:", "max_tokens_to_sample": 300})
 
     # Choose the model

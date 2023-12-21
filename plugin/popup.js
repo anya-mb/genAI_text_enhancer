@@ -1,3 +1,12 @@
+function extractReturnPartFromAssistantResponse(response) {
+    const parts = response.split(':', 2);
+    if (parts.length === 2) {
+        return parts[1].trim().replace(/\n/g, "").replace(/"/g, '\\"');
+    }
+    return ''; // or some default value or handling if the colon is not found
+}
+
+
 function setupTextProcessingButton(buttonId, apiUrl, operationType) {
     document.getElementById(buttonId).addEventListener("click", function () {
         chrome.tabs.executeScript({
@@ -16,7 +25,7 @@ function setupTextProcessingButton(buttonId, apiUrl, operationType) {
 
             console.dir(data);
             console.log(data.text);
-            const processedText = data.text.replace(/\n/g, "").replace(/"/g, '\\"');
+            const processedText = extractReturnPartFromAssistantResponse(data.text);
             console.log(processedText);
 
             // Insert processed text
