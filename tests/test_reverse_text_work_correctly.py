@@ -1,10 +1,10 @@
 import json
 from http import HTTPStatus
 import pytest
-from backend.main import lambda_reverse_text_backend
+from backend.main import lambda_improve_text_backend
 
 
-def test_lambda_reverse_text_backend():
+def test_lambda_improve_text_backend():
     body = {
         "operation": "reverse",
         "text": "example"
@@ -14,12 +14,12 @@ def test_lambda_reverse_text_backend():
     }
 
     context = None  # context is often not needed for basic tests
-    response = lambda_reverse_text_backend(event, context)
+    response = lambda_improve_text_backend(event, context)
 
     # what is expected
     status_code = HTTPStatus.OK.value
     body_text = {
-        "operation": "reverse",
+        # "operation": "reverse",
         "text": "elpmaxe"
     }
 
@@ -29,7 +29,7 @@ def test_lambda_reverse_text_backend():
         "headers": {"content-type": "application/json"},
     }
 
-    assert response == expected_response
+    assert response == expected_response, f"{response=}, {expected_response=}"
 
 
 @pytest.mark.parametrize("body", [
@@ -47,7 +47,7 @@ def test_lambda_reverse_text_backend_invalid_input(body):
     }
     context = None
 
-    response = lambda_reverse_text_backend(event, context)
+    response = lambda_improve_text_backend(event, context)
     status_code = response['statusCode']
 
     assert status_code == expected_status_code

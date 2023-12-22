@@ -34,7 +34,7 @@ def validate_request(request_body):
         return make_return(HTTPStatus.BAD_REQUEST.value, "Unknown operation")
 
 
-def get_text_and_operation(event, expected_operation):
+def get_text_and_operation(event):
     body = json.loads(event['body'])
 
     extracted_text = body['text']
@@ -43,7 +43,7 @@ def get_text_and_operation(event, expected_operation):
     return extracted_text, extracted_operation
 
 
-def is_not_valid(event, expected_operation):
+def is_not_valid(event):
     # The 'body' field is a stringified JSON, so parse it as well
     body = json.loads(event['body'])
 
@@ -55,44 +55,22 @@ def is_not_valid(event, expected_operation):
         extracted_text = body['text']
         extracted_operation = body['operation']
 
-        if extracted_operation != expected_operation:
-            return make_return(HTTPStatus.BAD_REQUEST.value,
-                               f"Bad request exception: {extracted_operation=}, but {expected_operation=}")
-
         return False
 
     except Exception as e:
         return make_return(HTTPStatus.INTERNAL_SERVER_ERROR.value, f"Exception={e}")
 
 
-def lambda_reverse_text_backend(event, context):
-    EXPECTED_OPERATION = "reverse"
-
-    result = is_not_valid(event, EXPECTED_OPERATION)
-
-    if result:
-        return result
-
-    text, operation = get_text_and_operation(event, EXPECTED_OPERATION)
-
+def reverse_text_backend(text):
     reversed_dict = {
-        "operation": operation,
+        # "operation": operation,
         "text": text[::-1]
     }
 
     return make_return(HTTPStatus.OK.value, json.dumps(reversed_dict, indent=2))
 
 
-def lambda_summarize_text_backend(event, context):
-    EXPECTED_OPERATION = "summarize"
-
-    result = is_not_valid(event, EXPECTED_OPERATION)
-
-    if result:
-        return result
-
-    text, operation = get_text_and_operation(event, EXPECTED_OPERATION)
-
+def summarize_text_backend(text, modelId='anthropic.claude-instant-v1'):
     boto3_bedrock = boto3.client('bedrock-runtime')
 
     prompt_data = f"Please summarize given text: {text}"
@@ -102,7 +80,6 @@ def lambda_summarize_text_backend(event, context):
     body = json.dumps({"prompt": "Human:" + prompt_data + "\nAssistant:", "max_tokens_to_sample": 300})
 
     # Choose the model
-    modelId = 'anthropic.claude-instant-v1'
     accept = 'application/json'
     contentType = 'application/json'
 
@@ -112,8 +89,27 @@ def lambda_summarize_text_backend(event, context):
 
 
     summarized_dict = {
-        "operation": operation,
+        # "operation": operation,
         "text": response_body['completion'] #"This is summarized text"
     }
 
     return make_return(HTTPStatus.OK.value, json.dumps(summarized_dict, indent=2))
+
+
+def lambda_improve_text_backend(event, context):
+    bad_validation_result = is_not_valid(event)
+
+    if bad_validation_result:
+        return bad_validation_result
+
+    text, operation = get_text_and_operation(event)
+
+    if operation == "reverse":
+        reversed_result = reverse_text_backend(text)
+        return reversed_result
+
+    elif operation == "summarize":
+        summarized_result = summarize_text_backend(text)
+        return summarized_result
+    else:
+        return make_return(HTTPStatus.BAD_REQUEST.value, "Unknown operation")

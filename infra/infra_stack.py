@@ -57,22 +57,13 @@ class InfraStack(Stack):
 
         lambda_improve_text = lambda_.Function(
             self,
-            "TextReverser",
+            "TextImprover",
             runtime=lambda_.Runtime.PYTHON_3_9,
             code=lambda_.Code.from_asset(os.path.join(DIRNAME, "backend")),
-            handler="main.lambda_reverse_text_backend",
+            handler="main.lambda_improve_text_backend",
             timeout=Duration.seconds(30),
+            role=lambda_role,
 
-        )
-
-        lambda_summarize_text = lambda_.Function(
-            self,
-            "TextSummarizer",
-            runtime=lambda_.Runtime.PYTHON_3_9,
-            code=lambda_.Code.from_asset(os.path.join(DIRNAME, "backend")),
-            handler="main.lambda_summarize_text_backend",
-            timeout=Duration.seconds(30),
-            role=lambda_role
         )
 
         # Create the HTTP API with CORS
@@ -89,19 +80,10 @@ class InfraStack(Stack):
 
         # Add a route to POST: reverse
         http_api.add_routes(
-            path="/reverse",
+            path="/",
             methods=[_apigw.HttpMethod.POST],
             integration=_integrations.HttpLambdaIntegration(
                 "LambdaProxyIntegration", handler=lambda_improve_text
-            ),
-        )
-
-        # Add a route to POST: summarize
-        http_api.add_routes(
-            path="/summarize",
-            methods=[_apigw.HttpMethod.POST],
-            integration=_integrations.HttpLambdaIntegration(
-                "LambdaProxyIntegration", handler=lambda_summarize_text
             ),
         )
 
